@@ -1,9 +1,10 @@
-import 'dart:convert';
-import 'package:flutter_social_login/model/usuario.dart';
-import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
-import 'package:flutter_facebook_login/flutter_facebook_login.dart';
+import 'package:flutter_social_login/model/usuario.dart';
+import 'package:flutter_social_login/helper/geralHelper.dart';
 import 'package:flutter_social_login/helper/navegacaoHelper.dart';
+import 'package:flutter_social_login/model/socialLoginException.dart';
+import 'package:flutter_social_login/services/autenticacaoService.dart';
+import 'package:flutter_social_login/services/autenticacaoFirebaseService.dart';
 
 class PrincipalView extends StatefulWidget {
   @override
@@ -11,12 +12,8 @@ class PrincipalView extends StatefulWidget {
 }
 
 class _PrincipalViewState extends State<PrincipalView> {
-  bool isLoading = false;
-
-  static const Key googleButtonKey = Key('google');
-  static const Key facebookButtonKey = Key('facebook');
-  static const Key emailPasswordButtonKey = Key('email-password');
-  static const Key anonymousButtonKey = Key('anonymous');
+  bool estaCarregando = false;
+  final AutenticacaoService autenticacaoService = AutenticacaoFirebaseService();
 
   @override
   Widget build(BuildContext context) {
@@ -26,8 +23,6 @@ class _PrincipalViewState extends State<PrincipalView> {
         title: Text("Flutter Social Login"),
         centerTitle: true,
       ),
-      // Hide developer menu while loading in progress.
-      // This is so that it's not possible to switch auth service while a request is in progress
       backgroundColor: Colors.grey[200],
       body: _constroiTelaPrincipal(context),
     );
@@ -42,67 +37,28 @@ class _PrincipalViewState extends State<PrincipalView> {
         children: <Widget>[
           SizedBox(
             height: 50.0,
-            child: isLoading ? Center(child: CircularProgressIndicator()) : Text("Login", textAlign: TextAlign.center, style: TextStyle(fontSize: 32.0, fontWeight: FontWeight.w600)),
+            child: estaCarregando ? Center(child: CircularProgressIndicator()) : Text("Login", textAlign: TextAlign.center, style: TextStyle(fontSize: 32.0, fontWeight: FontWeight.w600)),
           ),
           SizedBox(height: 48.0),
           RaisedButton.icon(
-            key: googleButtonKey,
             icon: Image.asset("assets/googleLogo.png"),
             label: Padding(padding: EdgeInsets.symmetric(horizontal: 5, vertical: 15), child: Text("Login com o Google")),
-            //onPressed: isLoading ? null : () => _signInWithGoogle(context),
-            onPressed: () {},
+            onPressed: estaCarregando ? null : () => _loginComGoogle(context),
             color: Colors.white,
           ),
           SizedBox(height: 15),
           RaisedButton.icon(
-            key: facebookButtonKey,
             icon: Image.asset("assets/facebookLogo.png"),
             label: Padding(padding: EdgeInsets.symmetric(horizontal: 5, vertical: 15), child: Text("Login com o Facebook")),
             textColor: Colors.white,
-            //onPressed: isLoading ? null : () => _signInWithFacebook(context),
-            onPressed: () async {
-              //var facebookLoginResult = await facebookLogin.logInWithReadPermissions(['email']);
-              var facebookLogin = FacebookLogin();
-              var facebookLoginResult = await facebookLogin.logIn(['email']);
-
-              switch (facebookLoginResult.status) {
-                case FacebookLoginStatus.error:
-                  //onLoginStatusChanged(false);
-                  break;
-                case FacebookLoginStatus.cancelledByUser:
-                  //onLoginStatusChanged(false);
-                  break;
-                case FacebookLoginStatus.loggedIn:
-                  var graphResponse = await http.get('https://graph.facebook.com/v2.12/me?fields=name,first_name,last_name,email,picture.width(400)&access_token=${facebookLoginResult.accessToken.token}');
-
-                  var profile = json.decode(graphResponse.body);
-                  print(profile.toString());
-
-                  String id = profile['id'];
-                  String nome = profile['name'];
-                  String email = profile['email'];
-                  String urlFoto = profile['picture']['data']['url'];
-                  
-                  Usuario usuarioLogado = Usuario(uid: id, nome: nome, email: email, urlFoto: urlFoto);
-
-                  Navigator.of(context).pushNamed(NavegacaoHelper.rotaUsuarioLogado, arguments: {"usuarioLogado" : usuarioLogado});
-
-                  //onLoginStatusChanged(true, profileData: profile);
-                  break;
-              }
-            },
+            onPressed: estaCarregando ? null : () => _loginComFacebook(context),
             color: Color(0xFF334D92),
           ),
           SizedBox(height: 15),
           RaisedButton.icon(
-            key: emailPasswordButtonKey,
             icon: Icon(Icons.email),
             label: Padding(padding: EdgeInsets.symmetric(horizontal: 5, vertical: 15), child: Text("Login com usuário a senha")),
-            onPressed: isLoading
-                ? null
-                : () {
-                    Navigator.of(context).pushNamed(NavegacaoHelper.rotaLogin);
-                  },
+            onPressed: estaCarregando ? null : () => Navigator.of(context).pushNamed(NavegacaoHelper.rotaLogin),
             textColor: Colors.white,
             color: Colors.teal[700],
           ),
@@ -114,15 +70,70 @@ class _PrincipalViewState extends State<PrincipalView> {
           ),
           SizedBox(height: 15),
           RaisedButton(
-            key: anonymousButtonKey,
             child: Padding(padding: EdgeInsets.symmetric(horizontal: 5, vertical: 15), child: Text("Login anônimo")),
             color: Colors.lime[300],
             textColor: Colors.black87,
-            //onPressed: isLoading ? null : () => _signInAnonymously(context),
-            onPressed: () {},
+            onPressed: estaCarregando ? null : () => _loginAnonimo(context),
           ),
         ],
       ),
     );
+  }
+
+  void _loginComFacebook(BuildContext context) async {
+    setState(() {
+      estaCarregando = true;
+    });
+
+    try {
+      Usuario usuarioLogadoFacebook = await autenticacaoService.loginComFacebook();
+      if (usuarioLogadoFacebook != null) {
+        Navigator.of(context).pushNamed(NavegacaoHelper.rotaUsuarioLogado, arguments: {"usuario": usuarioLogadoFacebook});
+      }
+    } on SocialLoginException catch (e) {
+      GeralHelper.instancia.exibirMensagem(context, "Atenção", "Ocorreu um erro ao realizar o login. Detalhes: \n  CODIGO: ${e.codigoErro}\n  MENSAGEM: ${e.mensagemErro}");
+    }
+
+    setState(() {
+      estaCarregando = false;
+    });
+  }
+
+  void _loginComGoogle(BuildContext context) async {
+    setState(() {
+      estaCarregando = true;
+    });
+
+    try {
+      Usuario usuarioLogadoGoogle = await autenticacaoService.loginComGoogle();
+      if (usuarioLogadoGoogle != null) {
+        Navigator.of(context).pushNamed(NavegacaoHelper.rotaUsuarioLogado, arguments: {"usuario": usuarioLogadoGoogle});
+      }
+    } on SocialLoginException catch (e) {
+      GeralHelper.instancia.exibirMensagem(context, "Atenção", "Ocorreu um erro ao realizar o login. Detalhes: \n  CODIGO: ${e.codigoErro}\n  MENSAGEM: ${e.mensagemErro}");
+    }
+
+    setState(() {
+      estaCarregando = false;
+    });
+  }
+
+  void _loginAnonimo(BuildContext context) async {
+    setState(() {
+      estaCarregando = true;
+    });
+
+    try {
+      Usuario usuarioAnonimo = await autenticacaoService.loginAnonimo();
+      if (usuarioAnonimo != null) {
+        Navigator.of(context).pushNamed(NavegacaoHelper.rotaUsuarioLogado, arguments: {"usuario": usuarioAnonimo});
+      }
+    } on SocialLoginException catch (e) {
+      GeralHelper.instancia.exibirMensagem(context, "Atenção", "Ocorreu um erro ao realizar o login. Detalhes: \n  CODIGO: ${e.codigoErro}\n  MENSAGEM: ${e.mensagemErro}");
+    }
+
+    setState(() {
+      estaCarregando = false;
+    });
   }
 }

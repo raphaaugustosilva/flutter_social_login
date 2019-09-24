@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_social_login/model/usuario.dart';
+import 'package:flutter_social_login/helper/validators.dart';
 import 'package:flutter_social_login/helper/geralHelper.dart';
 import 'package:flutter_social_login/helper/navegacaoHelper.dart';
-import 'package:flutter_social_login/helper/validators.dart';
+import 'package:flutter_social_login/model/socialLoginException.dart';
+import 'package:flutter_social_login/services/autenticacaoService.dart';
+import 'package:flutter_social_login/services/autenticacaoFirebaseService.dart';
 
 class LoginUsuarioESenhaView extends StatefulWidget {
   @override
@@ -14,7 +18,8 @@ class _LoginUsuarioESenhaViewState extends State<LoginUsuarioESenhaView> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _senhaController = TextEditingController();
   final EmailESenhaValidadores _emailESenhaValidadores = EmailESenhaValidadores();
-  bool isLoading = false;
+  bool estaCarregando = false;
+  final AutenticacaoService autenticacaoService = AutenticacaoFirebaseService();
 
   @override
   void dispose() {
@@ -51,26 +56,19 @@ class _LoginUsuarioESenhaViewState extends State<LoginUsuarioESenhaView> {
                     FlatButton(
                       color: Colors.red,
                       textColor: Colors.white,
-                      child: Center(child: isLoading ? CircularProgressIndicator() : Text("Login")),
+                      child: Center(child: estaCarregando ? Container(child: CircularProgressIndicator(), height: 20, width: 20) : Text("Login")),
                       onPressed: () async {
                         await _efetuarLogin();
                       },
                     ),
                     SizedBox(height: 8.0),
                     FlatButton(
-                        child: Text("Precisa de uma conta? Registre-se"),
-                        onPressed: isLoading
-                            ? null
-                            : () {
-                                Navigator.of(context).pushNamed(NavegacaoHelper.rotaCriarNovoUsuario);
-                              }),
+                      child: Text("Precisa de uma conta? Registre-se"),
+                      onPressed: estaCarregando ? null : () => Navigator.of(context).pushNamed(NavegacaoHelper.rotaCriarNovoUsuario),
+                    ),
                     FlatButton(
                       child: Text("Esqueceu sua senha?"),
-                      onPressed: isLoading
-                          ? null
-                          : () {
-                              Navigator.of(context).pushNamed(NavegacaoHelper.rotaEsqueceuSenha);
-                            },
+                      onPressed: estaCarregando ? null : () => Navigator.of(context).pushNamed(NavegacaoHelper.rotaEsqueceuSenha),
                     ),
                   ],
                 ),
@@ -83,19 +81,24 @@ class _LoginUsuarioESenhaViewState extends State<LoginUsuarioESenhaView> {
   }
 
   Future<void> _efetuarLogin() async {
+    setState(() {
+      estaCarregando = true;
+    });
+
     try {
-      //final bool loginSucesso = await model.submit();
-      bool loginSucesso = false;
-      if (loginSucesso) {
-        Navigator.of(context).pushNamed(NavegacaoHelper.rotaUsuarioLogado);
-        //Navegar para página principal logada
-        return;
+      final Usuario usuarioLogado = await autenticacaoService.login(_emailController.text, _senhaController.text);
+      if (usuarioLogado != null) {
+        Navigator.of(context).pushNamed(NavegacaoHelper.rotaUsuarioLogado, arguments: {"usuario": usuarioLogado});
       } else {
         GeralHelper.instancia.exibirMensagem(context, "Erro ao realizar login", "Ocorreu um erro ao realizar o login");
       }
-    } catch (e) {
-      GeralHelper.instancia.exibirMensagem(context, "Erro ao realizar login", "Ocorreu um erro ao realizar o login");
+    } on SocialLoginException catch (e) {
+      GeralHelper.instancia.exibirMensagem(context, "Erro ao realizar login", "Ocorreu um erro ao realizar o login. Detalhes: \n  CODIGO: ${e.codigoErro}\n  MENSAGEM: ${e.mensagemErro}");
     }
+
+    setState(() {
+      estaCarregando = false;
+    });
   }
 
   void _emailPreenchidoCompleto() {
@@ -115,7 +118,7 @@ class _LoginUsuarioESenhaViewState extends State<LoginUsuarioESenhaView> {
         labelText: "Email",
         hintText: "raphael@gmail.com",
         errorText: (_emailController.text.isEmpty || _emailESenhaValidadores.emailValidoValidador.estaValido(_emailController.text)) ? null : "Email inválido",
-        enabled: !isLoading,
+        enabled: !estaCarregando,
       ),
       autocorrect: false,
       textInputAction: TextInputAction.next,
@@ -134,7 +137,7 @@ class _LoginUsuarioESenhaViewState extends State<LoginUsuarioESenhaView> {
       decoration: InputDecoration(
         labelText: "Senha",
         //errorText: "Informe sua senha",
-        enabled: !isLoading,
+        enabled: !estaCarregando,
       ),
       obscureText: true,
       autocorrect: false,

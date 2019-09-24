@@ -48,17 +48,11 @@ class NavegacaoHelper {
           break;
 
         case rotaUsuarioLogado:
-          Usuario usuarioLogado = parametros != null ? parametros["usuarioLogado"] : null;
+          Usuario usuarioLogado = parametros != null ? parametros["usuario"] : null;
           if (usuarioLogado != null) {
             viewEncontrada = UsuarioLogadoView(usuarioLogado);
           }
           break;
-
-        // case rotaVisualizadorPDF:
-        //   //Faço aqui a extração dos parâmetros
-        //   File arquivoPDF = parametros != null ? parametros["arquivoPDF"] : null;
-        //   viewEncontrada = VisualizadorPDFView(arquivoPDF);
-        //   break;
 
         default:
           return null;

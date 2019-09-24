@@ -20,6 +20,7 @@ dependencies:
   firebase_core:
   firebase_auth:
   cloud_firestore:
+  google_sign_in:
   flutter_facebook_login: ^3.0.0
   http:
   flutter:

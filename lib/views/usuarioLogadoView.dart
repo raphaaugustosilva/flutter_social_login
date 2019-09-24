@@ -29,27 +29,38 @@ class _UsuarioLogadoViewState extends State<UsuarioLogadoView> {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: <Widget>[
                   SizedBox(height: 15),
-                  Container(
-                    height: 200.0,
-                    width: 200.0,
-                    decoration: (widget.usuarioLogado.urlFoto ?? "").isEmpty
-                        ? Container()
-                        : BoxDecoration(
-                            shape: BoxShape.circle,
-                            image: DecorationImage(
-                              fit: BoxFit.fill,
-                              image: NetworkImage(
-                                widget.usuarioLogado.urlFoto,
-                              ),
-                            ),
-                          ),
-                  ),
+                  widget.usuarioLogado.urlFoto == null
+                      ? Container()
+                      : Container(
+                          height: 200.0,
+                          width: 200.0,
+                          decoration: (widget.usuarioLogado.urlFoto ?? "").isEmpty
+                              ? Container()
+                              : BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  image: DecorationImage(
+                                    fit: BoxFit.fill,
+                                    image: NetworkImage(
+                                      widget.usuarioLogado.urlFoto,
+                                    ),
+                                  ),
+                                ),
+                        ),
                   SizedBox(height: 15),
-                  Row(children: <Widget>[Text("Identificador: ", style: TextStyle(fontWeight: FontWeight.bold),), Text(widget.usuarioLogado.uid)]),
+                  Row(children: <Widget>[
+                    Text("Identificador: ", style: TextStyle(fontWeight: FontWeight.bold)),
+                    Text(widget.usuarioLogado.uid ?? ""),
+                  ]),
                   SizedBox(height: 15),
-                  Row(children: <Widget>[Text("Nome: ", style: TextStyle(fontWeight: FontWeight.bold),), Text(widget.usuarioLogado.nome)]),
+                  Row(children: <Widget>[
+                    Text("Nome: ", style: TextStyle(fontWeight: FontWeight.bold)),
+                    Text(widget.usuarioLogado.nome ?? ""),
+                  ]),
                   SizedBox(height: 15),
-                  Row(children: <Widget>[Text("Email: ", style: TextStyle(fontWeight: FontWeight.bold),), Text(widget.usuarioLogado.email)]),
+                  Row(children: <Widget>[
+                    Text("Email: ", style: TextStyle(fontWeight: FontWeight.bold)),
+                    Text(widget.usuarioLogado.email ?? ""),
+                  ]),
                 ],
               ),
             ),
