@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CLIENT_ID</key>
+	<string>642841476290-bvn14g91hm2k6hbmgcu8r0soqkk1g53a.apps.googleusercontent.com</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>com.googleusercontent.apps.642841476290-bvn14g91hm2k6hbmgcu8r0soqkk1g53a</string>
+	<key>ANDROID_CLIENT_ID</key>
+	<string>642841476290-is8holj91rou2ia1hmvlntggmfhd1dmg.apps.googleusercontent.com</string>
+	<key>API_KEY</key>
+	<string>AIzaSyB0tBHzrbAPsan4xOEbL4Efn6V26pcFzcM</string>
+	<key>GCM_SENDER_ID</key>
+	<string>642841476290</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>com.sage.flutterSocialLogin</string>
+	<key>PROJECT_ID</key>
+	<string>fluttersociallogin-825ce</string>
+	<key>STORAGE_BUCKET</key>
+	<string>fluttersociallogin-825ce.appspot.com</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:642841476290:ios:87022627c34ba339dd0f5b</string>
+	<key>DATABASE_URL</key>
+	<string>https://fluttersociallogin-825ce.firebaseio.com</string>
+</dict>
+</plist>

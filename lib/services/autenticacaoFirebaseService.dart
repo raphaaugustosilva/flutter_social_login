@@ -179,23 +179,29 @@ class AutenticacaoFirebaseService implements AutenticacaoService {
 
   @override
   Future<Usuario> loginComGoogle() async {
-    final GoogleSignIn googleSignIn = GoogleSignIn();
-    final GoogleSignInAccount googleUser = await googleSignIn.signIn();
+    Usuario usuarioLogadoGoogle;
+    try {
+      final GoogleSignIn googleSignIn = GoogleSignIn();
+      final GoogleSignInAccount googleUser = await googleSignIn.signIn();
 
-    if (googleUser != null) {
-      final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
-      if (googleAuth.accessToken != null && googleAuth.idToken != null) {
-        final AuthResult authResult = await _firebaseAuth.signInWithCredential(GoogleAuthProvider.getCredential(
-          idToken: googleAuth.idToken,
-          accessToken: googleAuth.accessToken,
-        ));
-        return _converterUsuarioFirebase(authResult.user);
+      if (googleUser != null) {
+        final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
+        if (googleAuth.accessToken != null && googleAuth.idToken != null) {
+          final AuthResult authResult = await _firebaseAuth.signInWithCredential(GoogleAuthProvider.getCredential(
+            idToken: googleAuth.idToken,
+            accessToken: googleAuth.accessToken,
+          ));
+          usuarioLogadoGoogle = _converterUsuarioFirebase(authResult.user);
+        } else {
+          throw PlatformException(code: 'GOOGLE_AUTH_TOKEN_FALTANDO', message: 'Está faltando o Google Auth Token');
+        }
       } else {
-        throw PlatformException(code: 'ERROR_MISSING_GOOGLE_AUTH_TOKEN', message: 'Missing Google Auth Token');
+        throw PlatformException(code: 'GOOGLE_ABORTADO_PELO_USUARIO', message: 'Abortado pelo usuário');
       }
-    } else {
-      throw PlatformException(code: 'ERROR_ABORTED_BY_USER', message: 'Sign in aborted by user');
+    } catch (e) {
+      throw SocialLoginException(codigoErro: e.code, mensagemErro: e.message);
     }
+    return usuarioLogadoGoogle;
   }
 
   @override

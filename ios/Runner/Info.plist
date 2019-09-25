@@ -41,7 +41,7 @@
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
-	
+	<!-- Bloco para funcinar o Facebook Sign-in -->
 	<key>CFBundleURLTypes</key>
 	<array>
 		<dict>
@@ -62,5 +62,20 @@
 		<string>fbauth2</string>
 		<string>fbshareextension</string>
 	</array>
+	<!-- Fim Bloco para funcinar o Facebook Sign-in -->
+	<!-- Bloco para funcinar o Google Sign-in -->
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<!-- Copiado da chave REVERSED_CLIENT_ID do arquivo GoogleServices-Info.plist -->
+				<string>com.googleusercontent.apps.642841476290-bvn14g91hm2k6hbmgcu8r0soqkk1g53a</string>
+			</array>
+		</dict>
+	</array>
+	<!-- Fim Bloco para funcinar o Google Sign-in -->
 </dict>
 </plist>
