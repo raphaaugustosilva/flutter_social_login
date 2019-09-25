@@ -252,7 +252,6 @@ class AutenticacaoFirebaseService implements AutenticacaoService {
 
   @override
   Future<Usuario> recuperarUsuarioAtual() async {
-    await Future.delayed(Duration(seconds: 4));
     final FirebaseUser user = await _firebaseAuth.currentUser();
     return _converterUsuarioFirebase(user);
   }
