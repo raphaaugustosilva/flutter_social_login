@@ -23,8 +23,7 @@ class NavegacaoHelper {
 
       switch (settings.name) {
         case rotaRoot:
-          //viewEncontrada = LandingPage();
-          viewEncontrada = PrincipalView();
+          viewEncontrada = LandingPage();
           break;
 
         case rotaLandingPage:
@@ -93,8 +92,7 @@ class NavegacaoHelper {
     );
   }
 
-  static resetaNavegacaoENavegaParaLogin(BuildContext context, {String email, String senha}) {
-    Navigator.of(context).pushNamedAndRemoveUntil(NavegacaoHelper.rotaLogin, (Route<dynamic> route) => false);
-    Navigator.of(context).pushNamed(NavegacaoHelper.rotaLogin);
+  static resetaNavegacaoENavegaParaView(BuildContext context, String nomeView, {Object arguments}) {
+    Navigator.of(context).pushNamedAndRemoveUntil(nomeView, (Route<dynamic> route) => false, arguments: arguments);
   }
 }

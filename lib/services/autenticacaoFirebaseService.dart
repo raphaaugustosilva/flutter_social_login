@@ -252,19 +252,24 @@ class AutenticacaoFirebaseService implements AutenticacaoService {
 
   @override
   Future<Usuario> recuperarUsuarioAtual() async {
+    await Future.delayed(Duration(seconds: 4));
     final FirebaseUser user = await _firebaseAuth.currentUser();
     return _converterUsuarioFirebase(user);
   }
 
   @override
   Future<void> logout() async {
-    final GoogleSignIn googleSignIn = GoogleSignIn();
-    await googleSignIn.signOut();
+    try {
+      final GoogleSignIn googleSignIn = GoogleSignIn();
+      await googleSignIn.signOut();
 
-    final FacebookLogin facebookLogin = FacebookLogin();
-    await facebookLogin.logOut();
+      final FacebookLogin facebookLogin = FacebookLogin();
+      await facebookLogin.logOut();
 
-    return _firebaseAuth.signOut();
+      return _firebaseAuth.signOut();
+    } catch (e) {
+      throw SocialLoginException(codigoErro: "ERRO_LOGOUT", mensagemErro: e.message ?? "Erro ao realizar Logout");
+    }
   }
 
   @override

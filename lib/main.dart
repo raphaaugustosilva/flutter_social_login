@@ -15,8 +15,6 @@ class MyApp extends StatelessWidget {
       ),
       onGenerateRoute: NavegacaoHelper.rotas(),
       onUnknownRoute: NavegacaoHelper.rotaNaoEncontrada(),
-      
-  
     );
   } 
 }
