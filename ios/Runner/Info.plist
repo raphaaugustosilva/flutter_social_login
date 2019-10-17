@@ -41,7 +41,7 @@
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
-	<!-- Bloco para funcinar o Facebook Sign-in -->
+	<!-- Bloco para funcinar o Facebook e Google Sign-in -->
 	<key>CFBundleURLTypes</key>
 	<array>
 		<dict>
@@ -50,22 +50,7 @@
 				<string>fb383407415872755</string>
 			</array>
 		</dict>
-	</array>
-	<key>FacebookAppID</key>
-	<string>383407415872755</string>
-	<key>FacebookDisplayName</key>
-	<string>Flutter Social Login Teste</string>
-	<key>LSApplicationQueriesSchemes</key>
-	<array>
-		<string>fbapi</string>
-		<string>fb-messenger-share-api</string>
-		<string>fbauth2</string>
-		<string>fbshareextension</string>
-	</array>
-	<!-- Fim Bloco para funcinar o Facebook Sign-in -->
-	<!-- Bloco para funcinar o Google Sign-in -->
-	<key>CFBundleURLTypes</key>
-	<array>
+		
 		<dict>
 			<key>CFBundleTypeRole</key>
 			<string>Editor</string>
@@ -76,6 +61,18 @@
 			</array>
 		</dict>
 	</array>
-	<!-- Fim Bloco para funcinar o Google Sign-in -->
+
+	<key>FacebookAppID</key>
+	<string>383407415872755</string>
+	<key>FacebookDisplayName</key>
+	<string>Flutter Social Login Teste</string>
+	<key>LSApplicationQueriesSchemes</key>
+	<array>
+		<string>fbapi</string>
+		<string>fb-messenger-api</string>
+		<string>fbauth2</string>
+		<string>fbshareextension</string>
+	</array>
+	<!-- Fim Bloco para funcinar o Facebook e Google Sign-in -->
 </dict>
 </plist>
